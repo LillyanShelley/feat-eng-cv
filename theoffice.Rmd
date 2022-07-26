@@ -1,7 +1,9 @@
 ---
 title: "The Office"
-author: "Mine Çetinkaya-Rundel"
+author: "Lillyan Shelley"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r load-packages, message = FALSE}
@@ -41,13 +43,26 @@ theoffice %>%
 ### Exercise 1 - Calculate the percentage of lines spoken by Jim, Pam, Michael, and Dwight for each episode of The Office.
 
 ```{r lines}
-
+office_lines <- theoffice %>% 
+ group_by(season, episode) %>% 
+  mutate(n_lines = n(), 
+         lines_jim = sum(character == "Jim")/n_lines,
+         lines_pam = sum(character == "Pam")/n_lines,
+         lines_michael = sum(character == "Michael")/n_lines,
+         lines_dwight = sum(character == "Dwight")/n_lines,
+         ) %>% 
+  ungroup() %>% 
+  select(season, episode, episode_name, contains("lines_")) %>% 
+  distinct(season, episode, episode_name, .keep_all = TRUE) %>% 
+  #relocate(contains("lines")) %>% 
+  print()
 ```
 
 ### Exercise 2 - Identify episodes that touch on Halloween, Valentine's Day, and Christmas.
 
 ```{r special-episodes}
-
+office_lines %>% 
+  filter(episode_name == contains("Halloween", "Valentine", "Christmas"))
 ```
 
 ### Exercise 3 - Put together a modeling dataset that includes features you've engineered. Also add an indicator variable called `michael` which takes the value `1` if Michael Scott (Steve Carrell) was there, and `0` if not. Note: Michael Scott (Steve Carrell) left the show at the end of Season 7.
